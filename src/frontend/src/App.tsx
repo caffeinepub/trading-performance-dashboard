@@ -8,9 +8,9 @@ import {
 } from "@tanstack/react-router";
 import { Footer } from "./components/Footer";
 import { Navbar } from "./components/Navbar";
-import { AccountsPage } from "./pages/AccountsPage";
 import { AdminPage } from "./pages/AdminPage";
 import { HomePage } from "./pages/HomePage";
+import { ProfilePage } from "./pages/ProfilePage";
 
 // ── Root Layout ──────────────────────────────────────────────────────────────
 
@@ -49,10 +49,10 @@ const indexRoute = createRoute({
   component: HomePage,
 });
 
-const accountsRoute = createRoute({
+const profileRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: "/accounts",
-  component: AccountsPage,
+  path: "/profile",
+  component: ProfilePage,
 });
 
 const adminRoute = createRoute({
@@ -61,11 +61,7 @@ const adminRoute = createRoute({
   component: AdminPage,
 });
 
-const routeTree = rootRoute.addChildren([
-  indexRoute,
-  accountsRoute,
-  adminRoute,
-]);
+const routeTree = rootRoute.addChildren([indexRoute, profileRoute, adminRoute]);
 
 const router = createRouter({ routeTree });
 

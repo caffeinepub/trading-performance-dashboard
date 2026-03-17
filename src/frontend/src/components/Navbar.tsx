@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { BarChart3, TrendingUp } from "lucide-react";
+import { BarChart3, TrendingUp, UserCircle } from "lucide-react";
 
 export function Navbar() {
   return (
@@ -30,11 +30,12 @@ export function Navbar() {
             <span className="hidden sm:inline">Performance</span>
           </Link>
           <Link
-            to="/accounts"
-            data-ocid="nav.accounts.link"
+            to="/profile"
+            data-ocid="nav.profile.link"
             className="flex items-center gap-1.5 px-3 py-1.5 rounded text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors [&.active]:text-primary [&.active]:bg-primary/10"
           >
-            <span>Accounts</span>
+            <UserCircle className="h-3.5 w-3.5" />
+            <span>Profile</span>
           </Link>
         </nav>
       </div>
