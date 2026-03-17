@@ -2,7 +2,6 @@ import { AlertTriangle } from "lucide-react";
 
 export function Footer() {
   const year = new Date().getFullYear();
-  const utmUrl = `https://caffeine.ai?utm_source=caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(typeof window !== "undefined" ? window.location.hostname : "")}`;
 
   return (
     <footer className="border-t border-border mt-16">
@@ -31,17 +30,7 @@ export function Footer() {
             — Trading Performance Dashboard
           </span>
         </div>
-        <p className="text-xs text-muted-foreground">
-          © {year}.{" "}
-          <a
-            href={utmUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-primary transition-colors"
-          >
-            Built with ♥ using caffeine.ai
-          </a>
-        </p>
+        <p className="text-xs text-muted-foreground">© {year}</p>
       </div>
     </footer>
   );

@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { BarChart3, Shield, TrendingUp } from "lucide-react";
+import { BarChart3, TrendingUp } from "lucide-react";
 
 export function Navbar() {
   return (
@@ -35,14 +35,6 @@ export function Navbar() {
             className="flex items-center gap-1.5 px-3 py-1.5 rounded text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors [&.active]:text-primary [&.active]:bg-primary/10"
           >
             <span>Accounts</span>
-          </Link>
-          <Link
-            to="/admin"
-            data-ocid="nav.admin.link"
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors [&.active]:text-primary [&.active]:bg-primary/10"
-          >
-            <Shield className="h-3.5 w-3.5" />
-            <span className="hidden sm:inline">Admin</span>
           </Link>
         </nav>
       </div>

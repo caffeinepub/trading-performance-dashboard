@@ -1,5 +1,5 @@
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   BarChart2,
@@ -14,11 +14,7 @@ import {
 } from "lucide-react";
 import { motion } from "motion/react";
 import { TradingChart } from "../components/TradingChart";
-import {
-  useInstrumentStats,
-  usePerformanceMetrics,
-  useWeeklyScalpSummary,
-} from "../hooks/useQueries";
+import { useInstrumentStats, usePerformanceMetrics } from "../hooks/useQueries";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -138,15 +134,15 @@ function MetricCardSkeleton() {
 interface InstrumentSectionProps {
   symbol: string;
   displayName: string;
-  description: string;
   ocidPrefix: string;
+  chartSource?: string;
 }
 
 function InstrumentSection({
   symbol,
   displayName,
-  description,
   ocidPrefix,
+  chartSource = "OANDA",
 }: InstrumentSectionProps) {
   const { data: stats, isLoading } = useInstrumentStats(symbol);
 
@@ -193,7 +189,6 @@ function InstrumentSection({
           <h2 className="font-display font-bold text-xl text-foreground">
             {displayName}
           </h2>
-          <p className="text-sm text-muted-foreground">{description}</p>
         </div>
         <Badge
           variant="outline"
@@ -234,23 +229,11 @@ function InstrumentSection({
 
       {/* Chart */}
       <Card className="bg-card border-border overflow-hidden">
-        <CardHeader className="pb-2 pt-4 px-4 border-b border-border">
-          <div className="flex items-center gap-2">
-            <div className="h-2 w-2 rounded-full bg-success animate-pulse" />
-            <CardTitle className="text-sm font-mono text-muted-foreground">
-              {symbol} / USD — Candlestick
-            </CardTitle>
-          </div>
-        </CardHeader>
         <CardContent className="p-0">
           {isLoading ? (
             <Skeleton className="h-80 rounded-none" />
           ) : (
-            <TradingChart
-              data={stats?.chartData ?? []}
-              symbol={symbol}
-              height={320}
-            />
+            <TradingChart symbol={symbol} height={400} source={chartSource} />
           )}
         </CardContent>
       </Card>
@@ -262,7 +245,6 @@ function InstrumentSection({
 
 export function HomePage() {
   const { data: metrics, isLoading: metricsLoading } = usePerformanceMetrics();
-  const { data: weeklyScalps } = useWeeklyScalpSummary();
 
   const overallPnL = metrics?.overallPnL ?? 0;
   const pnlTrend = overallPnL >= 0 ? "positive" : "negative";
@@ -321,9 +303,9 @@ export function HomePage() {
             ) : (
               <>
                 <MetricCard
-                  label="Overall PnL"
+                  label="Total Capital (Xauusd)"
                   value={formatCurrency(metrics?.overallPnL ?? 0)}
-                  subLabel={`${(metrics?.overallPnL ?? 0) >= 0 ? "+" : ""}${(metrics?.overallPnL ?? 0).toFixed(1)}%`}
+                  subLabel="$ 282.80"
                   icon={
                     pnlTrend === "positive" ? (
                       <TrendingUp className="h-5 w-5" />
@@ -338,7 +320,6 @@ export function HomePage() {
                 <MetricCard
                   label="Win Ratio"
                   value={`${(metrics?.winRatio ?? 0).toFixed(1)}%`}
-                  subLabel="Trade success rate"
                   icon={<Target className="h-5 w-5" />}
                   trend={
                     (metrics?.winRatio ?? 0) >= 50 ? "positive" : "negative"
@@ -347,9 +328,9 @@ export function HomePage() {
                   ocid="metrics.win_ratio.card"
                 />
                 <MetricCard
-                  label="Total Trades"
+                  label="Total Trades (Weekly)"
                   value={String(metrics?.totalTrades ?? 0)}
-                  subLabel="All time"
+                  subLabel="This week"
                   icon={<BarChart2 className="h-5 w-5" />}
                   trend="neutral"
                   index={2}
@@ -378,7 +359,6 @@ export function HomePage() {
         <InstrumentSection
           symbol="XAUUSD"
           displayName="Gold / US Dollar"
-          description="XAU/USD scalping performance and price action"
           ocidPrefix="xauusd"
         />
 
@@ -386,79 +366,9 @@ export function HomePage() {
         <InstrumentSection
           symbol="USOIL"
           displayName="US Crude Oil"
-          description="WTI crude oil scalping performance and price action"
           ocidPrefix="usoil"
+          chartSource="TVC"
         />
-
-        {/* Portfolio Summary */}
-        <motion.section
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          data-ocid="portfolio.section"
-        >
-          <h2 className="font-display font-bold text-xl text-foreground mb-4">
-            Portfolio Summary
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <Card className="bg-card border-border glow-amber">
-              <CardContent className="p-5">
-                <p className="text-xs font-mono uppercase tracking-widest text-muted-foreground mb-2">
-                  Total Weekly Scalps
-                </p>
-                <p className="font-mono font-bold text-4xl text-primary tabular-nums">
-                  {weeklyScalps !== undefined ? String(weeklyScalps) : "—"}
-                </p>
-                <p className="text-xs text-muted-foreground mt-1">
-                  Combined XAUUSD + USOIL
-                </p>
-              </CardContent>
-            </Card>
-            <Card className="bg-card border-border sm:col-span-2">
-              <CardContent className="p-5">
-                <p className="text-xs font-mono uppercase tracking-widest text-muted-foreground mb-3">
-                  Portfolio Health
-                </p>
-                <div className="space-y-2">
-                  {[
-                    {
-                      label: "Overall Return",
-                      value: `${(metrics?.overallPnL ?? 0) >= 0 ? "+" : ""}${formatCurrency(metrics?.overallPnL ?? 0)}`,
-                      positive: (metrics?.overallPnL ?? 0) >= 0,
-                    },
-                    {
-                      label: "Win Rate",
-                      value: `${(metrics?.winRatio ?? 0).toFixed(1)}%`,
-                      positive: (metrics?.winRatio ?? 0) >= 50,
-                    },
-                    {
-                      label: "This Month",
-                      value: `${(metrics?.monthlyPnL ?? 0) >= 0 ? "+" : ""}${formatCurrency(metrics?.monthlyPnL ?? 0)}`,
-                      positive: (metrics?.monthlyPnL ?? 0) >= 0,
-                    },
-                  ].map((row) => (
-                    <div
-                      key={row.label}
-                      className="flex items-center justify-between py-1.5 border-b border-border last:border-0"
-                    >
-                      <span className="text-sm text-muted-foreground">
-                        {row.label}
-                      </span>
-                      <span
-                        className={`font-mono font-semibold text-sm ${
-                          row.positive ? "text-success" : "text-destructive"
-                        }`}
-                      >
-                        {row.value}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </motion.section>
       </div>
     </main>
   );
